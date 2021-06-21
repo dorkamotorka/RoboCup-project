@@ -5,6 +5,7 @@ General idea of our project is to program a Humanoid robot such that it will be 
 - Picking up the box
 - Walking with the box
 - Droping it off at a pre-defined position(sorting it to the correct container) and going to the next box
+A more in depth sequential version of this can be found in the file "Robocup Project.pdf"
 
 ## Extensions 
 TBA
@@ -38,3 +39,10 @@ Possible algorithm used for size determination is:
 - Determine the size of the bounding box
 
 If the size measurement won't be precise enough we will determine the size of the object according to it's color.
+
+## Task 2: Movement
+All movement keyframes will be created via choreographe.
+This includes:
+-turning around 180° to find the box
+-kneeling down to pick the box up
+-walking with the box

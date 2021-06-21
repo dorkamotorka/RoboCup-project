@@ -43,6 +43,6 @@ If the size measurement won't be precise enough we will determine the size of th
 ## Task 2: Movement
 All movement keyframes will be created via choreographe.
 This includes:
--turning around 180° to find the box
--kneeling down to pick the box up
--walking with the box
+- walking with the box
+- kneeling down to pick the box up
+- turning around 180° to find the box

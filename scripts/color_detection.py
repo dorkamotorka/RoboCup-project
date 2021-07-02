@@ -46,6 +46,7 @@ while(1):
                               mask=red_mask)
 
     # For green color
+    '''
     green_mask = cv2.dilate(green_mask, kernal)
     res_green = cv2.bitwise_and(imageFrame, imageFrame,
                                 mask=green_mask)
@@ -54,7 +55,7 @@ while(1):
     blue_mask = cv2.dilate(blue_mask, kernal)
     res_blue = cv2.bitwise_and(imageFrame, imageFrame,
                                mask=blue_mask)
-
+    '''
     # Creating contour to track red color
     contours, hierarchy = cv2.findContours(red_mask,
                                            cv2.RETR_TREE,
@@ -62,7 +63,7 @@ while(1):
 
     for pic, contour in enumerate(contours):
         area = cv2.contourArea(contour)
-        if(area > 300):
+        if(area > 5000):
             x, y, w, h = cv2.boundingRect(contour)
             imageFrame = cv2.rectangle(imageFrame, (x, y),
                                        (x + w, y + h),
@@ -94,7 +95,6 @@ while(1):
     contours, hierarchy = cv2.findContours(blue_mask,
                                            cv2.RETR_TREE,
                                            cv2.CHAIN_APPROX_SIMPLE)
-    '''
     for pic, contour in enumerate(contours):
         area = cv2.contourArea(contour)
         if(area > 300):
@@ -106,7 +106,7 @@ while(1):
             cv2.putText(imageFrame, "Blue Colour", (x, y),
                         cv2.FONT_HERSHEY_SIMPLEX,
                         1.0, (255, 0, 0))
-
+    '''
     # Program Termination
     cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
     if cv2.waitKey(10) & 0xFF == ord('q'):

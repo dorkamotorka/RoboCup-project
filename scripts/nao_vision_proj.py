@@ -15,10 +15,12 @@
 """Example of Python controller for Nao robot.
    This demonstrates how to access sensors and actuators"""
 
-from controller import Robot, Keyboard, Motion
+from controller import Robot, Motion
 import math
 import numpy as np
 from math import cos, sin
+
+PICKUP_DISTANCE = 0.4
 
 class Nao (Robot):
 
@@ -33,10 +35,6 @@ class Nao (Robot):
         self.cameraBottom.enable(4 * self.timeStep)
         self.cameraTop.recognitionEnable(4 * self.timeStep)
         self.cameraBottom.recognitionEnable(4 * self.timeStep)
-
-        # keyboard
-        self.keyboard = self.getKeyboard()
-        self.keyboard.enable(10 * self.timeStep)
 
     def __init__(self):
         Robot.__init__(self)
@@ -108,62 +106,53 @@ class Nao (Robot):
             robot.step(self.timeStep)
 
     def run(self):
-        # until a key is pressed
-        key = -1
-        while robot.step(self.timeStep) != -1:
-            key = self.keyboard.getKey()
-            if key > 0:
-                break
-                
         while True:
-            key = self.keyboard.getKey()
-            
-            if key == Keyboard.DOWN:
-                try:
-                    first_object = self.cameraBottom.getRecognitionObjects()[0]
-                    id = first_object.get_id()
-                    x = first_object.get_position()[0]
-                    y = first_object.get_position()[1]
-                    z = first_object.get_position()[2]
-                    #print('position: ', first_object.get_position())
-                    x, y, z = self.transform_bottom_cam(x, y, z)
-                    #print('x: ', x)
-                    #print('y: ', y)
-                    #print('z: ', z)
+            # Rotate until you detect an object
+            self.move(self.turn_right_60)
+            # Try to detect object with Top camera (more precise if the object is more distant)
+            objects = self.cameraTop.getRecognitionObjects()
+            if len(objects) == 0:
+                # If Top camera doesnt detect anything try to detect with Bottom camera
+                objects = self.cameraBottom.getRecognitionObjects()
 
-                    distance = math.sqrt(math.pow(x,2)+math.pow(y,2))
-                    print('distance: ', distance)
-                    angle = math.atan2(x,y)
-                    print('angle: ', angle)
-                except IndexError:
-                    print('No Object detected')
+            if objects:
+                distance = 100 # value doesnt matter
 
-                #self.move(self.turn_left_60)
-            elif key == Keyboard.UP:
-                try:
-                    first_object = self.cameraTop.getRecognitionObjects()[0]
-                    id = first_object.get_id()
-                    x = first_object.get_position()[0]
-                    y = first_object.get_position()[1]
-                    z = first_object.get_position()[2]
-                    #print('position: ', first_object.get_position())
-                    x, y, z = self.transform_top_cam(x, y, z)
-                    #print('x: ', x)
-                    #print('y: ', y)
-                    #print('z: ', z)
+                while distance > PICKUP_DISTANCE:
+                    # Update objects all the time since we are moving
+                    objects = self.cameraTop.getRecognitionObjects()
+                    if len(objects) == 0:
+                        # If Top camera doesnt detect anything try to detect with Bottom camera
+                        objects = self.cameraBottom.getRecognitionObjects()
+                        print(objects)
+                    if objects:
+                        first_object = objects[0]
+                        x = first_object.get_position()[0]
+                        y = first_object.get_position()[1]
+                        z = first_object.get_position()[2]
+                        x, y, z = self.transform_bottom_cam(x, y, z)
+                        #print('x: ', x)
+                        #print('y: ', y)
+                        #print('z: ', z)
 
-                    distance = math.sqrt(math.pow(x,2)+math.pow(y,2))
-                    print('distance: ', distance)
-                    angle = math.atan2(x,y)
-                    print('angle: ', angle)
-                except IndexError:
-                    print('No Object detected')
+                        distance = math.sqrt(math.pow(x,2)+math.pow(y,2))
+                        print('distance: ', distance)
+                        angle = math.atan2(x,y)
+                        print('angle: ', angle)
 
-                #self.move(self.turn_right_60)
+                        # First turn towards the box
+                        # TODO: Need smaller angle turns!
 
-            if robot.step(self.timeStep) == -1:
+                        # Go to the box
+                        # TODO: Need smaller steps forward!
+                        self.move(self.forward)
+                    else:
+                        print('Lost sight ob object. Back to searching...')
+                        distance = PICKUP_DISTANCE + 1  # Break out of loop 
+                print('READY TO PICKUP THE BOX')    
                 break
-
+            else:
+                print('No Object detected')
 
 # create the Robot instance and run main loop
 robot = Nao()

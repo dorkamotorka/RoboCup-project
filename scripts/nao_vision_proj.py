@@ -131,7 +131,7 @@ class Nao (Robot):
                         self.move(self.forward)
                     else:
                         print('Lost sight ob object. Back to searching...')
-                        distance = PICKUP_DISTANCE + 1  # Break out of loop 
+                        distance = PICKUP_DISTANCE - 1  # Break out of loop 
                 print('READY TO PICKUP THE BOX')    
                 break
             else:

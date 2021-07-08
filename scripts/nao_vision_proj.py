@@ -3,7 +3,10 @@ import math
 import numpy as np
 from math import cos, sin
 
-PICKUP_DISTANCE = 0.4
+PICKUP_DISTANCE = 0.3
+RED = [1.0, 0.0, 0.0]
+GREEN = [0.0, 1.0, 0.0]
+BLUE = [0.0, 0.0, 1.0]
 
 class Nao (Robot):
 
@@ -89,6 +92,7 @@ class Nao (Robot):
             robot.step(self.timeStep)
 
     def run(self):
+        have_object = False
         while True:
             # Rotate until you detect an object
             self.move(self.turn_right_60)
@@ -99,41 +103,66 @@ class Nao (Robot):
                 objects = self.cameraBottom.getRecognitionObjects()
 
             if objects:
-                distance = 100 # value doesnt matter
+                colors = objects[0].get_colors()
 
-                while distance > PICKUP_DISTANCE:
-                    # Update objects all the time since we are moving
-                    objects = self.cameraTop.getRecognitionObjects()
-                    if len(objects) == 0:
-                        # If Top camera doesnt detect anything try to detect with Bottom camera
-                        objects = self.cameraBottom.getRecognitionObjects()
-                        print(objects)
-                    if objects:
-                        first_object = objects[0]
-                        x = first_object.get_position()[0]
-                        y = first_object.get_position()[1]
-                        z = first_object.get_position()[2]
-                        x, y, z = self.transform_bottom_cam(x, y, z)
-                        #print('x: ', x)
-                        #print('y: ', y)
-                        #print('z: ', z)
+                # Drop off location is BLUE
+                if colors == BLUE and have_object:
+                    print('Have an object and moving towards to the drop off location')
+                elif colors == BLUE and not have_object:
+                    print('We dont have yet the object to drop it off')
+                    continue 
+                elif colors == RED and not have_object:
+                    print('Lets go pick up the object')
+                elif colors == RED and have_object:
+                    print('We are already carrying the object')
+                    continue
 
-                        distance = math.sqrt(math.pow(x,2)+math.pow(y,2))
-                        print('distance: ', distance)
-                        angle = math.atan2(x,y)
-                        print('angle: ', angle)
+                if objects:
 
-                        # First turn towards the box
-                        # TODO: Need smaller angle turns!
+                    first_loop = True
+                    x = objects[0].get_position()[0]
+                    y = objects[0].get_position()[1]
+                    distance = math.sqrt(math.pow(x,2)+math.pow(y,2))
+                    while distance > PICKUP_DISTANCE:
+                        # Update objects all the time since we are moving
+                        print(len(objects))
+                        if not first_loop:
+                            objects = self.cameraTop.getRecognitionObjects()
+                            if len(objects) == 0:
+                                # If Top camera doesnt detect anything try to detect with Bottom camera
+                                objects = self.cameraBottom.getRecognitionObjects()
+                        first_loop = False
+                        if objects:
+                            first_object = objects[0]
+                            x = first_object.get_position()[0]
+                            y = first_object.get_position()[1]
+                            z = first_object.get_position()[2]
+                            x, y, z = self.transform_bottom_cam(x, y, z)
+                            #print('x: ', x)
+                            #print('y: ', y)
+                            #print('z: ', z)
 
-                        # Go to the box
-                        # TODO: Need smaller steps forward!
-                        self.move(self.forward)
-                    else:
-                        print('Lost sight ob object. Back to searching...')
-                        distance = PICKUP_DISTANCE - 1  # Break out of loop 
-                print('READY TO PICKUP THE BOX')    
-                break
+                            distance = math.sqrt(math.pow(x,2)+math.pow(y,2))
+                            print('distance: ', distance)
+                            angle = math.atan2(x,y)
+                            print('angle: ', angle)
+
+                            # First turn towards the box
+                            # TODO: Need smaller angle turns!
+
+                            # Go to the box
+                            # TODO: Need smaller steps forward!
+                            self.move(self.forward)
+                        else:
+                            print('Lost sight ob object. Back to searching...')
+                            distance = PICKUP_DISTANCE - 1  # Break out of loop 
+
+                    if colors == BLUE: 
+                        print('Dropping of the object')
+                        have_object = False
+                    elif colors == RED:
+                        print('Picking up the object')    
+                        have_object = True
             else:
                 print('No Object detected')
 

@@ -2,8 +2,9 @@ from controller import Robot, Motion
 import math
 import numpy as np
 from math import cos, sin
+import time
 
-PICKUP_DISTANCE = 0.3
+PICKUP_DISTANCE = 0.4
 RED = [1.0, 0.0, 0.0]
 GREEN = [0.0, 1.0, 0.0]
 BLUE = [0.0, 0.0, 1.0]
@@ -12,7 +13,7 @@ class Nao (Robot):
 
     def findAndEnableDevices(self):
         # get the time step of the current world.
-        self.timeStep = int(self.getBasicTimeStep())
+        self.timeStep = int(self.getBasicTimeStep()) # milliseconds
 
         # camera
         self.cameraTop = self.getDevice("CameraTop")
@@ -22,20 +23,53 @@ class Nao (Robot):
         self.cameraTop.recognitionEnable(4 * self.timeStep)
         self.cameraBottom.recognitionEnable(4 * self.timeStep)
 
+
     def __init__(self):
         Robot.__init__(self)
 
         # initialize stuff
         self.findAndEnableDevices()
         self.load_motions()
+        self.load_joints()
 
     def load_motions(self):
-        self.turn_left_60 = Motion("motions/TurnLeft60.motion");
+        self.turn_left_60 = Motion("motions/TurnLeft60.motion")
         self.turn_right_60 = Motion('motions/TurnRight60.motion')
-        self.forward = Motion("motions/Forwards50.motion");
-        self.backward = Motion("motions/Backwards.motion");
-        self.side_step_left = Motion("motions/SideStepLeft.motion");
-        self.side_step_right = Motion("motions/SideStepRight.motion");
+        self.forward = Motion("motions/Forwards50.motion")
+        self.backward = Motion("motions/Backwards.motion")
+        self.side_step_left = Motion("motions/SideStepLeft.motion")
+        self.side_step_right = Motion("motions/SideStepRight.motion")
+        self.pickup = Motion('motions/Pickup.motion')
+        self.stand = Motion('motions/Stand.motion')
+
+    def load_joints(self):
+        self.head_yaw_motor = self.getDevice('HeadYaw')
+        #print('motor: ', dir(self.head_yaw_motor))
+        self.head_yaw_position = self.getDevice('HeadYawS')
+        #print('position: ', dir(self.head_yaw_position))
+
+    def shake_head(self):
+        print('Max: ', self.head_yaw_motor.getMaxPosition())
+        print('Min: ', self.head_yaw_motor.getMinPosition())
+        print('MaxVel: ', self.head_yaw_motor.getMaxVelocity())
+        '''
+        self.head_yaw_motor.setPosition(-2.08567)
+        time.sleep(2.0)
+        self.head_yaw_motor.setPosition(2.08567)
+        time.sleep(2.0)
+        self.head_yaw_motor.setPosition(-2.08567)
+        time.sleep(2.0)
+        self.head_yaw_motor.setPosition(2.08567)
+        time.sleep(2.0)
+        '''
+        #self.head_yaw_motor.setVelocity(2.08567)
+        #self.head_yaw_motor.setPosition(2.08567)
+        #time.sleep(2.0)
+        #self.head_yaw_motor.setVelocity(2.08567)
+        self.head_yaw_motor.setTorque(-1.0)
+
+    def nodding(self):
+        pass
 
     def transform_bottom_cam(self, x, y, z):
         '''red := x, green := y, blue := z'''
@@ -88,10 +122,15 @@ class Nao (Robot):
     def move(self, motion):
         # Start motion and execute it until done
         motion.play()
+        print(dir(motion))
         while (not motion.isOver()):
             robot.step(self.timeStep)
 
     def run(self):
+        self.move(self.stand)
+        self.move(self.pickup)
+        print('done')
+        '''
         have_object = False
         while True:
             # Rotate until you detect an object
@@ -165,7 +204,7 @@ class Nao (Robot):
                         have_object = True
             else:
                 print('No Object detected')
-
+        '''
 # create the Robot instance and run main loop
 robot = Nao()
 robot.run()

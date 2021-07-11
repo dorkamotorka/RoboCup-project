@@ -43,3 +43,9 @@ Rotation matrix using numpy:
                         [a21, a22, a23],
                         [a31, a32, a33]])
 
+## Motion Converter
+
+We used Choregraphe to create desired motions and exported them in a Simplied form as a python file. 
+Since NAO in Webots moves using .motion files we needed to find a way/conversion such that output of Choregraphe can almost straight away used in the Webots simulation.
+Therefore we created a script /scripts/nao_to_webots_motion_converter.py that can with a little bit of modification used with any Choregraphe output.
+We also find this script of a general purpose since we could not find it anywhere online, so an additional bonus for the society.

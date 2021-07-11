@@ -48,29 +48,6 @@ class Nao (Robot):
         self.head_yaw_position = self.getDevice('HeadYawS')
         #print('position: ', dir(self.head_yaw_position))
 
-    def shake_head(self):
-        print('Max: ', self.head_yaw_motor.getMaxPosition())
-        print('Min: ', self.head_yaw_motor.getMinPosition())
-        print('MaxVel: ', self.head_yaw_motor.getMaxVelocity())
-        '''
-        self.head_yaw_motor.setPosition(-2.08567)
-        time.sleep(2.0)
-        self.head_yaw_motor.setPosition(2.08567)
-        time.sleep(2.0)
-        self.head_yaw_motor.setPosition(-2.08567)
-        time.sleep(2.0)
-        self.head_yaw_motor.setPosition(2.08567)
-        time.sleep(2.0)
-        '''
-        #self.head_yaw_motor.setVelocity(2.08567)
-        #self.head_yaw_motor.setPosition(2.08567)
-        #time.sleep(2.0)
-        #self.head_yaw_motor.setVelocity(2.08567)
-        self.head_yaw_motor.setTorque(-1.0)
-
-    def nodding(self):
-        pass
-
     def transform_bottom_cam(self, x, y, z):
         '''red := x, green := y, blue := z'''
         # Got by inverse quaternion of the camera orientation such that coordinate frame had x forward and y to the left of the robot(z up) + converted to radians
@@ -127,10 +104,6 @@ class Nao (Robot):
             robot.step(self.timeStep)
 
     def run(self):
-        self.move(self.stand)
-        self.move(self.pickup)
-        print('done')
-        '''
         have_object = False
         while True:
             # Rotate until you detect an object
@@ -200,11 +173,13 @@ class Nao (Robot):
                         print('Dropping of the object')
                         have_object = False
                     elif colors == RED:
+                        self.move(self.stand)
+                        self.move(self.pickup)
                         print('Picking up the object')    
                         have_object = True
             else:
                 print('No Object detected')
-        '''
+
 # create the Robot instance and run main loop
 robot = Nao()
 robot.run()

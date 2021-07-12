@@ -15,22 +15,13 @@ class Nao (Robot):
         # get the time step of the current world.
         self.timeStep = int(self.getBasicTimeStep()) # milliseconds
 
-        # camera
-        self.cameraTop = self.getDevice("CameraTop")
-        self.cameraBottom = self.getDevice("CameraBottom")
-        self.cameraTop.enable(4 * self.timeStep)
-        self.cameraBottom.enable(4 * self.timeStep)
-        self.cameraTop.recognitionEnable(4 * self.timeStep)
-        self.cameraBottom.recognitionEnable(4 * self.timeStep)
-
-
     def __init__(self):
         Robot.__init__(self)
 
         # initialize stuff
         self.findAndEnableDevices()
         self.load_motions()
-        self.load_joints()
+        self.load_sensors()
 
     def load_motions(self):
         self.turn_left_60 = Motion("motions/TurnLeft60.motion")
@@ -42,19 +33,40 @@ class Nao (Robot):
         self.pickup = Motion('motions/Pickup.motion')
         self.stand = Motion('motions/Stand.motion')
 
-    def load_joints(self):
-        self.head_yaw_motor = self.getDevice('HeadYaw')
-        #print('motor: ', dir(self.head_yaw_motor))
-        self.head_yaw_position = self.getDevice('HeadYawS')
-        #print('position: ', dir(self.head_yaw_position))
+    def load_sensors(self):
+        # camera
+        self.cameraTop = self.getDevice("CameraTop")
+        self.cameraBottom = self.getDevice("CameraBottom")
+        self.cameraTop.enable(4 * self.timeStep)
+        self.cameraBottom.enable(4 * self.timeStep)
+        self.cameraTop.recognitionEnable(4 * self.timeStep)
+        self.cameraBottom.recognitionEnable(4 * self.timeStep)
 
-    def transform_bottom_cam(self, x, y, z):
-        '''red := x, green := y, blue := z'''
-        # Got by inverse quaternion of the camera orientation such that coordinate frame had x forward and y to the left of the robot(z up) + converted to radians
-        rot_x = -0.8779005
-        rot_y = 0
-        rot_z = 1.5707963
+        # sonars
+        self.sonar_right = self.getDevice('Sonar/Right')
+        self.sonar_left = self.getDevice('Sonar/Left')
+        self.sonar_right.enable(4 * self.timeStep)
+        self.sonar_left.enable(4 * self.timeStep)
 
+        # bumpers
+        self.right_foot_right_bumper = self.getDevice('RFoot/Bumper/Right')
+        self.right_foot_left_bumper = self.getDevice('RFoot/Bumper/Left')
+        self.left_foot_right_bumper = self.getDevice('LFoot/Bumper/Right')
+        self.left_foot_left_bumper = self.getDevice('LFoot/Bumper/Left')
+        self.right_foot_right_bumper.enable(4 * self.timeStep)
+        self.right_foot_left_bumper.enable(4 * self.timeStep)
+        self.left_foot_right_bumper.enable(4 * self.timeStep)
+        self.left_foot_left_bumper.enable(4 * self.timeStep)
+        
+        # accelerometer
+        self.accel = self.getDevice('accelerometer')
+        self.accel.enable(4 * self.timeStep)
+
+        # gyro
+        self.gyro = self.getDevice('gyro')
+        self.gyro.enable(4 * self.timeStep)
+
+    def get_rot_matrix(self, rot_x, rot_y, rot_z):
         a11 = cos(rot_z)*cos(rot_y)
         a12 = cos(rot_z)*sin(rot_y)*sin(rot_x) - sin(rot_z)*cos(rot_x)
         a13 = cos(rot_z)*sin(rot_y)*cos(rot_x) + sin(rot_z)*sin(rot_x)
@@ -67,6 +79,39 @@ class Nao (Robot):
         rot_matrix = np.matrix([[a11, a12, a13],
                                 [a21, a22, a23],
                                 [a31, a32, a33]])
+
+        return rot_matrix
+
+    def transform_gyro(self, x, y, z):
+        rot_x = 0.0
+        rot_y = 0.0
+        rot_z = 0.0
+
+        rot_matrix = self.get_rot_matrix(rot_x, rot_y, rot_z)
+        out = np.dot([x, y, z], rot_matrix)
+        out = np.squeeze(np.asarray(out))
+
+        return out[0], out[1], out[2]
+
+    def transform_accel(self, x, y, z):
+        rot_x = -3.1415927
+        rot_y = 0.0
+        rot_z = 0.0
+
+        rot_matrix = self.get_rot_matrix(rot_x, rot_y, rot_z)
+        out = np.dot([x, y, z], rot_matrix)
+        out = np.squeeze(np.asarray(out))
+
+        return out[0], out[1], out[2]
+
+    def transform_bottom_cam(self, x, y, z):
+        '''red := x, green := y, blue := z'''
+        # Got by inverse quaternion of the camera orientation such that coordinate frame had x forward and y to the left of the robot(z up) + converted to radians
+        rot_x = -0.8779005
+        rot_y = 0
+        rot_z = 1.5707963
+
+        rot_matrix = self.get_rot_matrix(rot_x, rot_y, rot_z)
         out = np.dot([x, y, z], rot_matrix)
         out = np.squeeze(np.asarray(out))
 
@@ -79,18 +124,7 @@ class Nao (Robot):
         rot_y = -0.000002
         rot_z = 1.5707983
 
-        a11 = cos(rot_z)*cos(rot_y)
-        a12 = cos(rot_z)*sin(rot_y)*sin(rot_x) - sin(rot_z)*cos(rot_x)
-        a13 = cos(rot_z)*sin(rot_y)*cos(rot_x) + sin(rot_z)*sin(rot_x)
-        a21 = sin(rot_z)*sin(rot_y)
-        a22 = sin(rot_z)*sin(rot_y)*sin(rot_x) + cos(rot_z)*cos(rot_x)
-        a23 = sin(rot_z)*sin(rot_y)*cos(rot_x) - cos(rot_z)*cos(rot_x)
-        a31 = -sin(rot_y)
-        a32 = cos(rot_y)*sin(rot_x)
-        a33 = cos(rot_y)*cos(rot_x)
-        rot_matrix = np.matrix([[a11, a12, a13],
-                                [a21, a22, a23],
-                                [a31, a32, a33]])
+        rot_matrix = self.get_rot_matrix(rot_x, rot_y, rot_z)
         out = np.dot([x, y, z], rot_matrix)
         out = np.squeeze(np.asarray(out))
 
@@ -99,13 +133,22 @@ class Nao (Robot):
     def move(self, motion):
         # Start motion and execute it until done
         motion.play()
-        print(dir(motion))
         while (not motion.isOver()):
             robot.step(self.timeStep)
 
     def run(self):
         have_object = False
         while True:
+            
+            print('sonar left: ', self.sonar_right.getValue())
+            print('sonar right: ', self.sonar_right.getValue())
+            print('bumpers RR: ', self.right_foot_right_bumper.getValue())
+            print('bumpers LL: ', self.left_foot_left_bumper.getValue())
+            print('bumpers RL: ', self.right_foot_left_bumper.getValue())
+            print('bumpers LR: ', self.left_foot_right_bumper.getValue())
+            print('gyro: ', self.gyro.getValues())
+            print('accel: ', self.accel.getValues())
+
             # Rotate until you detect an object
             self.move(self.turn_right_60)
             # Try to detect object with Top camera (more precise if the object is more distant)

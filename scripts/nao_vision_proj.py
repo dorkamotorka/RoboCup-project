@@ -24,14 +24,14 @@ class Nao (Robot):
         self.load_sensors()
 
     def load_motions(self):
-        self.turn_left_60 = Motion("scripts/motions/TurnLeft60.motion")
-        self.turn_right_60 = Motion('scripts/motions/TurnRight60.motion')
-        self.forward = Motion("scripts/motions/Forwards50.motion")
-        self.backward = Motion("scripts/motions/Backwards.motion")
-        self.side_step_left = Motion("scripts/motions/SideStepLeft.motion")
-        self.side_step_right = Motion("scripts/motions/SideStepRight.motion")
-        self.pickup = Motion('scripts/motions/Pickup.motion')
-        self.stand = Motion('scripts/motions/Stand.motion')
+        self.turn_left_60 = Motion("motions/TurnLeft60.motion")
+        self.turn_right_60 = Motion('motions/TurnRight60.motion')
+        self.forward = Motion("motions/Forwards.motion")
+        self.backward = Motion("motions/Backwards.motion")
+        self.side_step_left = Motion("motions/SideStepLeft.motion")
+        self.side_step_right = Motion("motions/SideStepRight.motion")
+        self.pickup = Motion('motions/Pickup.motion')
+        self.stand = Motion('motions/Stand.motion')
 
     def load_sensors(self):
         # camera

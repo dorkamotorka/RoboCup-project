@@ -27,11 +27,13 @@ class Nao (Robot):
         self.turn_left_60 = Motion("motions/TurnLeft60.motion")
         self.turn_right_60 = Motion('motions/TurnRight60.motion')
         self.forward = Motion("motions/Forwards.motion")
+        self.forward_with_box = Motion("motions/ForwardWithBox.motion")
         self.backward = Motion("motions/Backwards.motion")
         self.side_step_left = Motion("motions/SideStepLeft.motion")
         self.side_step_right = Motion("motions/SideStepRight.motion")
         self.pickup = Motion('motions/Pickup.motion')
         self.stand = Motion('motions/Stand.motion')
+        self.drop = Motion('motions/drop.motion')
 
     def load_sensors(self):
         # camera
@@ -208,7 +210,10 @@ class Nao (Robot):
 
                             # Go to the box
                             # TODO: Need smaller steps forward!
-                            self.move(self.forward)
+                            if have_object:
+                                self.move(self.forward_with_box)
+                            else:
+                                self.move(self.forward)
                             
                         else:
                             print('Lost sight ob object. Back to searching...')
@@ -216,6 +221,7 @@ class Nao (Robot):
 
                     if colors == BLUE: 
                         print('Dropping of the object')
+                        self.move(self.drop)
                         have_object = False
                     elif colors == RED:
                         self.move(self.stand)

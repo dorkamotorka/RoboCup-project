@@ -1,7 +1,7 @@
 # RoboCup project
 
 General idea of our project is to program a Humanoid robot such that it will be able to perform tasks such as:
-- Detecting the box, its size and color
+- Detecting the box and its color
 - Picking up the box
 - Walking with the box
 - Droping it off at a pre-defined position(sorting it to the correct container) and going to the next box

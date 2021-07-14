@@ -19,8 +19,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation -0.1052254581455425 -0.9824399195009622 -0.15407597972754797 2.0297869713734156
-  position -3.98119388262403 0.8065351828685219 -3.736039608150357
+  orientation -0.9995713412153872 -0.029197061145968362 0.0021599632660937976 0.8285576354014855
+  position -2.8738667000309417 3.2083627408380537 -0.5690125467043669
   follow "NAO"
 }
 Background {
@@ -84,7 +84,7 @@ DEF RedBox Solid {
   boundingObject USE RedBox
   physics Physics {
     density 250
-    mass 1
+    mass 0.5
   }
   recognitionColors [
     1 0 0
@@ -758,7 +758,7 @@ Robot {
                                     ]
                                     endPoint Solid {
                                       translation 0.014 0 0
-                                      rotation 0 0.9999999999999999 0 0.9599999868484109
+                                      rotation 0 1 0 0.9599999827693358
                                       children [
                                         USE PHALANX_TRANS
                                         DEF RPhalanx3 HingeJoint {
@@ -778,7 +778,7 @@ Robot {
                                           ]
                                           endPoint Solid {
                                             translation 0.014 0 0
-                                            rotation 0 1 0 0.959999998424324
+                                            rotation 0 1 0 0.9599999979344787
                                             children [
                                               USE PHALANX_TRANS
                                             ]
@@ -841,7 +841,7 @@ Robot {
                                     ]
                                     endPoint Solid {
                                       translation 0.014 0 0
-                                      rotation 0 1 0 0.9599999868497073
+                                      rotation 0 1 0 0.9599999827710072
                                       children [
                                         USE PHALANX_TRANS
                                         DEF RPhalanx6 HingeJoint {
@@ -861,7 +861,7 @@ Robot {
                                           ]
                                           endPoint Solid {
                                             translation 0.014 0 0
-                                            rotation 0 0.9999999999999999 0 0.9599999984246991
+                                            rotation 0 1 0 0.9599999979349692
                                             children [
                                               USE PHALANX_TRANS
                                             ]
@@ -921,7 +921,7 @@ Robot {
                                     ]
                                     endPoint Solid {
                                       translation 0.014 0 0
-                                      rotation 0 -1 0 0.9599999972605304
+                                      rotation 0 -1 0 0.9599999964176154
                                       children [
                                         USE PHALANX_TRANS
                                       ]
@@ -1310,7 +1310,7 @@ Robot {
                                     ]
                                     endPoint Solid {
                                       translation 0.014 0 0
-                                      rotation 0 1 0 0.9599999874469529
+                                      rotation 0 1 0 0.9599999835537344
                                       children [
                                         USE PHALANX_TRANS
                                         DEF LPhalanx3 HingeJoint {
@@ -1330,7 +1330,7 @@ Robot {
                                           ]
                                           endPoint Solid {
                                             translation 0.014 0 0
-                                            rotation 0 1 0 0.9599999987642835
+                                            rotation 0 0.9999999999999999 0 0.9599999983801184
                                             children [
                                               USE PHALANX_TRANS
                                             ]
@@ -1393,7 +1393,7 @@ Robot {
                                     ]
                                     endPoint Solid {
                                       translation 0.014 0 0
-                                      rotation 0 1 0 0.9599999874462514
+                                      rotation 0 1 0 0.9599999835528078
                                       children [
                                         USE PHALANX_TRANS
                                         DEF LPhalanx6 HingeJoint {
@@ -1413,7 +1413,7 @@ Robot {
                                           ]
                                           endPoint Solid {
                                             translation 0.014 0 0
-                                            rotation 0 1 0 0.9599999987640075
+                                            rotation 0 0.9999999999999999 0 0.9599999983797617
                                             children [
                                               USE PHALANX_TRANS
                                             ]
@@ -1473,7 +1473,7 @@ Robot {
                                     ]
                                     endPoint Solid {
                                       translation 0.014 0 0
-                                      rotation 0 -0.9999999999999999 0 0.9599999973986596
+                                      rotation 0 -1 0 0.9599999965982474
                                       children [
                                         USE PHALANX_TRANS
                                       ]
@@ -2729,26 +2729,6 @@ Sofa {
 Carpet {
   translation -2.5 -0.015 -0.9
 }
-Solid {
-  translation -2.61084 0.02 -3.46202
-  children [
-    Shape {
-      appearance PBRAppearance {
-        baseColor 0 0 1
-        emissiveColor 0 0 1
-      }
-      geometry Plane {
-        size 0.5 0.5
-      }
-    }
-  ]
-  name "solid(1)"
-  boundingObject Plane {
-  }
-  recognitionColors [
-    0 0 1
-  ]
-}
 BunchOfSunFlowers {
   translation -1.1 0 1
 }
@@ -2763,4 +2743,25 @@ PottedTree {
 PortraitPainting {
   translation -2.53 1.6 1.73
   rotation 0 1 0 3.14159
+}
+Solid {
+  translation -2.54311 -6.66133e-16 -4.44172
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 0 1
+        emissiveColor 0 0 1
+      }
+      geometry Box {
+        size 0.5 0.5 0.5
+      }
+    }
+  ]
+  name "solid(1)"
+  boundingObject Box {
+    size 0.5 0.05 0.5
+  }
+  recognitionColors [
+    0 0 1
+  ]
 }

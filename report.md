@@ -138,9 +138,11 @@ As soon as that happened we marked the last distance measurement we got and perf
 For example if the last distance was aprox. 60 centimeters, we blindly performed 6 steps forward each for 10 centimeters.
 
 
-### Drop Off Maneuver
+### Drop Off and Back Away Maneuver
 
 As soon as we blindly aproached are drop off area, similarly to the pick up maneuvers, object was dropped and task was completed.
+If the robot tried to move after dropping of the object with colliding into it, it had to first back away/go backwards. 
+That is why after the drop off robot immediately backs away for about 30-40cm. 
 
 
 ## Problems we Encountered and Solved

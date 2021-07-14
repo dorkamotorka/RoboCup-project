@@ -4,6 +4,16 @@ The most important thing on the NAO for us was 2x Head camera we used for object
 
 ![image](https://user-images.githubusercontent.com/48418580/125603897-e288db98-0732-488f-8171-77c382e7b307.png)
 
+## Task Description
+
+General idea of our project is to program a NAO Humanoid robot such that it will be able to perform tasks such as:
+- Searching for the box in the near area
+- Detecting the box and its color
+- Move towards the box
+- Pick up the box
+- Walk with the box towards the drop of location
+- Drop it off at a pre-defined position
+
 ## Searching for Box
 
 NAO spins on spot and after each in-place turn it checks whether is sees an object, if that's true it transitions to moving towards it.

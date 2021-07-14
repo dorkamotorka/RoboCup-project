@@ -5,7 +5,7 @@ from math import cos, sin
 import time
 
 PICKUP_DISTANCE = 0.24
-DROPOFF_DISTANCE =0.19
+DROPOFF_DISTANCE =0.198
 RED = [1.0, 0.0, 0.0]
 GREEN = [0.0, 1.0, 0.0]
 BLUE = [0.0, 0.0, 1.0]
@@ -143,6 +143,7 @@ class Nao (Robot):
 
     def run(self):
         have_object = False
+        blue_have_object = False
         counter = 0
         while True:
             
@@ -159,7 +160,7 @@ class Nao (Robot):
             self.move(self.turn_right_60)
             # Try to detect object with Top camera (more precise if the object is more distant)
             objects = self.cameraTop.getRecognitionObjects()
-            if len(objects) == 0:
+            if len(objects) == 0 and have_object == False:
                 
                 # If Top camera doesnt detect anything try to detect with Bottom camera
                 objects = self.cameraBottom.getRecognitionObjects()
@@ -170,6 +171,7 @@ class Nao (Robot):
                 # Drop off location is BLUE
                 if colors == BLUE and have_object:
                     print('Have an object and moving towards to the drop off location')
+                    blue_have_object = True
                 elif colors == BLUE and not have_object:
                     print('We dont have yet the object to drop it off')
                     continue 
@@ -178,10 +180,6 @@ class Nao (Robot):
                 elif colors == RED and have_object:
                     print('We are already carrying the object')
                     continue
-                if BLUE in colors and have_object:
-                    print("Blue and have object")
-                    for n in range(12):
-                        self.move(self.forward)
 
                 if objects:
 
@@ -190,7 +188,7 @@ class Nao (Robot):
                     y = objects[0].get_position()[1]
                     distance = math.sqrt(math.pow(x,2)+math.pow(y,2))
                     print('distance: ', distance)
-                    while distance > PICKUP_DISTANCE or counter==0:
+                    while ((distance > PICKUP_DISTANCE and blue_have_object== False )or counter==0) or (distance > DROPOFF_DISTANCE and blue_have_object== True ):
                         # Update objects all the time since we are moving
                         if not first_loop:
                             objects = self.cameraTop.getRecognitionObjects()
@@ -218,11 +216,16 @@ class Nao (Robot):
 
                             # Go to the box
                             # TODO: Need smaller steps forward!
-                            if have_object:
+                            print(colors)
+                            if have_object and colors == BLUE:
                                 self.move(self.forward)
-                            else:
+
+                            elif not have_object:
                                 self.move(self.forward)
                                 counter+=1
+                            elif have_object and not colors == BLUE:
+                                print("lost sight of dropoff box")
+                                continue
                             
                         else:
                             print('Lost sight ob object. Back to searching...')
@@ -231,6 +234,10 @@ class Nao (Robot):
                     if colors == BLUE: 
                         print('Dropping of the object')
                         self.move(self.drop)
+                        self.move(self.backward)
+                        self.move(self.backward)
+                        counter =0
+                        blue_have_object = False
                         have_object = False
                     elif colors == RED:
                         self.move(self.stand)

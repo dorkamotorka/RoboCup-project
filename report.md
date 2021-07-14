@@ -95,3 +95,18 @@ For example if the last distance was aprox. 60 centimeters, we blindly performed
 ## Drop Off Maneuver
 
 As soon as we blindly aproached are drop off area, similarly to the pick up maneuvers, object was dropped and task was completed.
+
+## Problems we Encountered and Solved
+
+As is normal for each project we encountered unexpected problems related to the simulation environment, robot itself, motions etc.
+One of the major problems we solved is:
+- We had to translate Choregraphe python output file to Webots motion file
+- Standing position of the NAO in the Choregraphe is different from one in Webots simulation
+- In-accurate object positioning using Camera
+- Choregraphe motions were to fast in the Webots simulation
+- Picking up the object
+
+and couple of smaller ones:
+- Adjusting the weight of the object
+- Adjusting camera coordinate frame transformation
+- Comparing Sonar/Bumper/Camera sensors on the NAO

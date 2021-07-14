@@ -4,7 +4,7 @@ import numpy as np
 from math import cos, sin
 import time
 
-PICKUP_DISTANCE = 0.224
+PICKUP_DISTANCE = 0.24
 RED = [1.0, 0.0, 0.0]
 GREEN = [0.0, 1.0, 0.0]
 BLUE = [0.0, 0.0, 1.0]
@@ -142,6 +142,7 @@ class Nao (Robot):
 
     def run(self):
         have_object = False
+        counter = 0
         while True:
             
             #print('sonar left: ', self.sonar_right.getValue())
@@ -155,8 +156,7 @@ class Nao (Robot):
 
             # Rotate until you detect an object
             if have_object:
-                self.move(self.stand_with_box)
-                self.move(self.forward_with_box)
+                self.move(self.turn_right_60)
             else:
                 self.move(self.turn_right_60)
             # Try to detect object with Top camera (more precise if the object is more distant)
@@ -187,7 +187,7 @@ class Nao (Robot):
                     y = objects[0].get_position()[1]
                     distance = math.sqrt(math.pow(x,2)+math.pow(y,2))
                     print('distance: ', distance)
-                    while distance > PICKUP_DISTANCE:
+                    while distance > PICKUP_DISTANCE or counter==0:
                         # Update objects all the time since we are moving
                         print(len(objects))
                         if not first_loop:
@@ -217,9 +217,11 @@ class Nao (Robot):
                             # Go to the box
                             # TODO: Need smaller steps forward!
                             if have_object:
-                                self.move(self.forward_with_box)
-                            else:
                                 self.move(self.forward)
+                            else:
+                                print(counter)
+                                self.move(self.forward)
+                                counter+=1
                             
                         else:
                             print('Lost sight ob object. Back to searching...')

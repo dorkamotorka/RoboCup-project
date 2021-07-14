@@ -4,7 +4,7 @@ import numpy as np
 from math import cos, sin
 import time
 
-PICKUP_DISTANCE = 0.239
+PICKUP_DISTANCE = 0.224
 RED = [1.0, 0.0, 0.0]
 GREEN = [0.0, 1.0, 0.0]
 BLUE = [0.0, 0.0, 1.0]
@@ -24,16 +24,18 @@ class Nao (Robot):
         self.load_sensors()
 
     def load_motions(self):
-        self.turn_left_60 = Motion("motions/TurnLeft60.motion")
-        self.turn_right_60 = Motion('motions/TurnRight60.motion')
-        self.forward = Motion("motions/Forwards.motion")
-        self.forward_with_box = Motion("motions/ForwardWithBox.motion")
-        self.backward = Motion("motions/Backwards.motion")
-        self.side_step_left = Motion("motions/SideStepLeft.motion")
-        self.side_step_right = Motion("motions/SideStepRight.motion")
-        self.pickup = Motion('motions/Pickup.motion')
-        self.stand = Motion('motions/Stand.motion')
-        self.drop = Motion('motions/drop.motion')
+        self.turn_left_60 = Motion("scripts/motions/TurnLeft60.motion")
+        self.turn_right_60 = Motion('scripts/motions/TurnRight60.motion')
+        self.forward = Motion("scripts/motions/Forwards.motion")
+        self.forward_with_box = Motion("scripts/motions/ForwardWithBox.motion")
+        self.backward = Motion("scripts/motions/Backwards.motion")
+        self.side_step_left = Motion("scripts/motions/SideStepLeft.motion")
+        self.side_step_right = Motion("scripts/motions/SideStepRight.motion")
+        self.pickup = Motion('scripts/motions/Pickup.motion')
+        self.stand = Motion('scripts/motions/Stand.motion')
+        self.drop = Motion('scripts/motions/drop.motion')
+        self.stand_with_box = Motion("scripts/motions/standwithbox.motion")
+        self.turn_with_box = Motion("scripts/motions/turnwithbox.motion")
 
     def load_sensors(self):
         # camera
@@ -152,7 +154,11 @@ class Nao (Robot):
             #print('accel: ', self.accel.getValues())
 
             # Rotate until you detect an object
-            self.move(self.turn_right_60)
+            if have_object:
+                self.move(self.stand_with_box)
+                self.move(self.forward_with_box)
+            else:
+                self.move(self.turn_right_60)
             # Try to detect object with Top camera (more precise if the object is more distant)
             objects = self.cameraTop.getRecognitionObjects()
             if len(objects) == 0:

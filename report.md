@@ -110,3 +110,11 @@ and couple of smaller ones:
 - Adjusting the weight of the object
 - Adjusting camera coordinate frame transformation
 - Comparing Sonar/Bumper/Camera sensors on the NAO
+
+## NAO motion .py file converter to .motion file
+
+Searching through internet we did not found any script that would do the conversion for us.
+We consider this script really useful for anybody creating NAO robot motion using Choregraphe and wanting to use it in the Webots simulation. 
+Script was tested and confirmed working with all of our custom motions.
+
+THe script can be found under /scripts/nao_to_webots_motion_converter.py

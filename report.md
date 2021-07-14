@@ -123,4 +123,4 @@ Searching through internet we did not found any script that would converte pytho
 We consider this script really useful for anybody creating NAO robot motion using Choregraphe and wanting to use it in the Webots simulation. 
 Script was tested and confirmed working with all of our custom motions.
 
-THe script can be found under /scripts/nao_to_webots_motion_converter.py
+The script can be found under `/scripts/nao_to_webots_motion_converter.py`

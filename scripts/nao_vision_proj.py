@@ -5,6 +5,7 @@ from math import cos, sin
 import time
 
 PICKUP_DISTANCE = 0.24
+DROPOFF_DISTANCE =0.19
 RED = [1.0, 0.0, 0.0]
 GREEN = [0.0, 1.0, 0.0]
 BLUE = [0.0, 0.0, 1.0]
@@ -155,13 +156,11 @@ class Nao (Robot):
             #print('accel: ', self.accel.getValues())
 
             # Rotate until you detect an object
-            if have_object:
-                self.move(self.turn_right_60)
-            else:
-                self.move(self.turn_right_60)
+            self.move(self.turn_right_60)
             # Try to detect object with Top camera (more precise if the object is more distant)
             objects = self.cameraTop.getRecognitionObjects()
             if len(objects) == 0:
+                
                 # If Top camera doesnt detect anything try to detect with Bottom camera
                 objects = self.cameraBottom.getRecognitionObjects()
 
@@ -179,6 +178,10 @@ class Nao (Robot):
                 elif colors == RED and have_object:
                     print('We are already carrying the object')
                     continue
+                if BLUE in colors and have_object:
+                    print("Blue and have object")
+                    for n in range(12):
+                        self.move(self.forward)
 
                 if objects:
 
@@ -189,7 +192,6 @@ class Nao (Robot):
                     print('distance: ', distance)
                     while distance > PICKUP_DISTANCE or counter==0:
                         # Update objects all the time since we are moving
-                        print(len(objects))
                         if not first_loop:
                             objects = self.cameraTop.getRecognitionObjects()
                             if len(objects) == 0:
@@ -219,7 +221,6 @@ class Nao (Robot):
                             if have_object:
                                 self.move(self.forward)
                             else:
-                                print(counter)
                                 self.move(self.forward)
                                 counter+=1
                             

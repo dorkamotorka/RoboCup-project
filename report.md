@@ -5,6 +5,13 @@ The most important thing on the NAO for us was 2x Head camera we used for object
 ![image](https://user-images.githubusercontent.com/48418580/125603897-e288db98-0732-488f-8171-77c382e7b307.png)
 
 
+## Webots Intro
+
+Initially we started with SPARK, Choregraphe but endep up using Webots.
+The reason for that are:
+- We had problem setting up the environments on our computers, since everybody needed a different python setup etc.
+- Adding and modifying object in Webots is really convenient and additionaly lots of tutorials for that is provided
+
 
 ## Task Description
 
@@ -15,10 +22,10 @@ General idea of our project is to program a NAO Humanoid robot such that it will
 - Pick up the box
 - Walk with the box towards the drop of location
 - Drop it off at a pre-defined position
+- Back away from the box
+And these steps can go on and on in a loop...
 
 ### Initial Planning
-
-#### Task 1: Detect the box and classify it
 
 The task requires for all the positions of the box to be known in advance such that the robot is capable of finding them in the environment.
 Once robot detects the box with the camera it classifies it according to the size and color.
@@ -48,21 +55,23 @@ Possible algorithm used for size determination is:
 
 If the size measurement won't be precise enough we will determine the size of the object according to it's color.
 
-#### Task 2: Movement
 All movement keyframes will be created via choreographe.
 This includes:
 - walking with the box
 - kneeling down to pick the box up
 - turning around 180° to find the box
 
+
 ### Final Plan
 
+We needed to adjust and replan initial task due to time constraint and limited knowledge about Webots, Choregraphe and other tools we used.
 Steps that were performed on a final design are summarized below.
-We needed to adjust and replan initial task due to time constraint and limited knowledge.
 
-### Searching for Box
+### Our Webots Environment
 
-NAO spins on spot and after each in-place turn it checks whether is sees an object, if that's true it transitions to moving towards it.
+Background of our environment is a random living room, where red T-shaped object represent a box we will carry to the blue drop off box location.
+
+![image](https://user-images.githubusercontent.com/48418580/125654907-271ddfee-12a0-4c72-90e1-149c3a10b1c0.png)
 
 
 ### Box detection Setup
@@ -79,6 +88,11 @@ Image below denotes both camera Field of Views and gives a sense to what NAO is 
 <img src="https://user-images.githubusercontent.com/48418580/125604669-9964c653-2583-44c4-a4e0-32ac0fad222f.png" width="450" height="450"> <img src="https://user-images.githubusercontent.com/48418580/125604723-97ef5800-9802-4174-a52b-7ec5fa39491a.png" width="450" height="450">
 
 
+### Searching for Box
+
+NAO spins on spot and after each in-place rotation it checks whether is sees a red T-shaped object. Once red object is detected and the orientation error is aprox. the same as the smallest in place turn angle NAO can do, robot transitions to moving towards it. 
+
+
 ### Moving towards the box
 
 First the robot turns towards the object such that it is aproximately perpendicular to the object. Calculated using:
@@ -86,7 +100,6 @@ First the robot turns towards the object such that it is aproximately perpendicu
 	atan2(y, x) 
 
 where x, y represent the position of the object in the NAO camera frames.
-Once the orientation error is aprox. the same as the smallest in place turn angle NAO can do, we transition to forward movement.
 Robot approaches box until it reaches a pickup distance, which is a predefined value from which robot is able to pick up the object it approached.
 
 Distance is calculated using Euclidian formula:
@@ -119,16 +132,19 @@ Rotation matrix using numpy:
 
 ### Pick Up Maneuver
 
-In order to simplify complex picking up maneuvers we should have performed in order to accurately pick up boxed or coned shaped object we designed a T-shaped Box(T-Box) this way we only need to be aproximattely perpendicular to the box and at a distance of about 20-30 centimeters.
+In order to simplify complex picking up maneuvers we should have performed in order to accurately pick up box or cone shaped object we designed a T-shaped Box(T-Box) this way we only need to be aproximately perpendicular to the box and at a distance of about 20-30 centimeters.
 
-![image](https://user-images.githubusercontent.com/48418580/125595552-8e0e4591-7617-4bd9-b7fe-6d7239df2d5f.png)
+![image](https://user-images.githubusercontent.com/48418580/125595552-8e0e4591-7617-4bd9-b7fe-6d7239df2d5f.png) 
 
+<img src="https://user-images.githubusercontent.com/48418580/125655013-12910a44-a7bc-41a1-ad00-2db76fe5da9d.png" width="450" height="350"> <img src="https://user-images.githubusercontent.com/48418580/125655049-380505d8-e4e3-411a-987a-6ca91459048d.png" width="450" height="350"> <img src="https://user-images.githubusercontent.com/48418580/125655078-15469035-f30b-4f13-89d2-08fdcf19b58b.png" width="450" height="350"> <img src="https://user-images.githubusercontent.com/48418580/125654726-8676e061-9cdd-44a6-91b8-fe28c50ec926.png" width="450" height="350">
+
+<img src="https://user-images.githubusercontent.com/48418580/125654849-c0035d51-d617-4d8c-881a-4eaedcecf97f.png" width="750" height="550">
 
 ### Searching for Drop Off location
 
 As soon as we Picked up the object we were constrained to only one camera, since Bottom camera of the robot was covered with the T-Box, we had to rely only on Top Camera. 
 Similar to as without the T-Box, robot performed in place rotation until it detected the drop off location. 
-Drop off location is a blue plane area robot is able to recognize through camera stream.
+Drop off location is a blue  box robot is able to recognize through camera stream.
 
 
 ### Moving towards the Drop Off location
@@ -143,6 +159,8 @@ For example if the last distance was aprox. 60 centimeters, we blindly performed
 As soon as we blindly aproached are drop off area, similarly to the pick up maneuvers, object was dropped and task was completed.
 If the robot tried to move after dropping of the object with colliding into it, it had to first back away/go backwards. 
 That is why after the drop off robot immediately backs away for about 30-40cm. 
+
+<img src="https://user-images.githubusercontent.com/48418580/125656383-f7e1fa3d-1985-4e52-9b02-8c7a0b3aff14.png" width="450" height="350"> <img src="https://user-images.githubusercontent.com/48418580/125656594-cc9e4ddc-6ad2-40c5-8e7c-8b85d2f05935.png" width="450" height="350">
 
 
 ## Problems we Encountered and Solved
